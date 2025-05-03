@@ -108,7 +108,8 @@ This table stores the generated keyword strategy:
 
 ### Webhook Settings
 
-NocoDB Webhook Settings:
+NocoDB Webhook Settings
+
 ![Webhook Settings](./screenshots/webhook-settings.png)
 
 ## Data Flow
