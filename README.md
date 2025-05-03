@@ -12,7 +12,10 @@ This repository contains n8n workflows for automating various tasks.
 
 Import workflows into your n8n instance.
 
+## Available Workflows
 
+- [Link Capture System](Link%20Capture%20System/README.md) - Captures links from Telegram messages, processes them using AI, and stores results in Airtable.
+- [Video to Text](Video%20to%20Text/README.md) - Transcribes MP4 videos from Google Drive using ElevenLabs' speech-to-text API.
 
 ---
 
