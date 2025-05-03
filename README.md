@@ -16,6 +16,7 @@ Import workflows into your n8n instance.
 
 - [Link Capture System](Link%20Capture%20System/README.md) - Captures links from Telegram messages, processes them using AI, and stores results in Airtable.
 - [Video to Text](Video%20to%20Text/README.md) - Transcribes MP4 videos from Google Drive using ElevenLabs' speech-to-text API.
+- [AI Powered SEO Keyword Research Automation](AI-Powered%20SEO%20Keyword%20Research%20Automation/README.md) - Automates comprehensive keyword research using AI and data-driven analytics, combining OpenAI with DataForSEO for content strategy generation.
 
 ---
 
