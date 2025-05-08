@@ -20,6 +20,13 @@ Import workflows into your n8n instance.
 
 ---
 
+## Getting Started with n8n
+
+If you're new to n8n, you can sign up and test this workflow directly:
+[Sign up for n8n](https://n8n.partnerlinks.io/d25fz3175b1l)
+
+---
+
 ## License
 
 MIT License
