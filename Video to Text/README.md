@@ -48,3 +48,8 @@ graph TD
 - Files are processed sequentially
 - Transcription quality depends on ElevenLabs' speech recognition capabilities
 - The document title automatically removes the .mp4 extension from the original filename
+
+## Getting Started with n8n
+
+If you're new to n8n, you can sign up and test this workflow directly:
+[Get started with n8n](https://n8n.partnerlinks.io/d25fz3175b1l)

@@ -222,3 +222,12 @@ Here is an example Output the Workflow generated based on the following inputs:
 The workflow provides a powerful automation for content marketers and SEO specialists to develop data-driven keyword strategies with minimal manual effort.
 
 > Original Workflow: [AI-Powered SEO Keyword Research Automation - The vibe Marketer](https://templates.thevibemarketer.com/template/seo-keyword-research)
+
+---
+
+## Getting Started with n8n
+
+This workflow is now available in the n8n template library as a verified creator workflow: [Comprehensive SEO Keyword Research with OpenAI & DataForSEO Analytics to NocoDB](https://n8n.io/workflows/3908-comprehensive-seo-keyword-research-with-openai-and-dataforseo-analytics-to-nocodb/)
+
+If you're new to n8n, you can sign up and test this workflow directly:
+[Get started with n8n](https://n8n.partnerlinks.io/d25fz3175b1l)

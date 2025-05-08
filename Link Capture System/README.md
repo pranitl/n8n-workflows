@@ -95,3 +95,8 @@ flowchart TD
 | Content Idea    | Long Text   |
 | Automation Idea | Long Text   |
 | Summary         | Long Text   |
+
+## Getting Started with n8n
+
+If you're new to n8n, you can sign up and test this workflow directly:
+[Get started with n8n](https://n8n.partnerlinks.io/d25fz3175b1l)
