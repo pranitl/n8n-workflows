@@ -1,74 +1,69 @@
 {
-  "name": "AI powered SEO Keyword Research Automation - The vibe Marketer",
+  "name": "SEO",
   "nodes": [
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "o1",
-          "mode": "list",
-          "cachedResultName": "o1"
-        },
+        "model": "openai/o1",
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
       "position": [
-        88,
-        455
+        -1480,
+        760
       ],
-      "id": "65aacfa5-4891-49f9-a614-2866c96142ee",
-      "name": "OpenAI Chat Model",
+      "id": "d7da5f05-2118-4e4b-a665-3e7352ebe7df",
+      "name": "OpenRouter Chat Model",
       "credentials": {
-        "openAiApi": {
-          "id": "AZynAxNG099jyj7B",
-          "name": "OpenAi account"
+        "openRouterApi": {
+          "id": "P84n99cAAxOGTsfX",
+          "name": "OpenRouter account"
         }
       }
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"primary_keywords\": [\"string\"],\n  \"long_tail_keywords\": [\n    {\n      \"keyword\": \"string\",\n      \"intent\": \"string\"\n    }\n  ],\n  \"question_based_keywords\": [\"string\"],\n  \"related_topics\": [\"string\"]\n}\n"
+        "jsonSchemaExample": "{\n  \"output\": {\n    \"primary_keywords\": [\n      \"keyword 1 related to primary_topic and location\",\n      \"keyword 2 related to primary_topic and location\"\n    ],\n    \"long_tail_keywords\": [\n      {\n        \"keyword\": \"long-tail variation example for primary_topic\",\n        \"intent\": \"informational\"\n      },\n      {\n        \"keyword\": \"how to buy product related to primary_topic\",\n        \"intent\": \"transactional\"\n      },\n      {\n        \"keyword\": \"best service for primary_topic in location\",\n        \"intent\": \"commercial\"\n      }\n    ],\n    \"question_based_keywords\": [\n      \"What is {{ $json.primary_topic }}?\",\n      \"How does {{ $json.primary_topic }} work in {{ $json.location }}?\"\n    ],\n    \"related_topics\": [\n      \"adjacent topic A for primary_topic\",\n      \"broader concept B for primary_topic\"\n    ]\n  }\n}"
       },
+      "id": "020c5487-668d-48c4-86b9-d99f431a302b",
+      "name": "Structured Output Parser1",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
       "position": [
-        208,
-        455
+        -1340,
+        760
       ],
-      "id": "5a0445ad-20c9-4e62-8e04-62451d3e8f7e",
-      "name": "Structured Output Parser"
+      "typeVersion": 1.2
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=I need to create comprehensive SEO keyword research for content about: \n{{ $json.primary_topic }}\n\nMy target audience is: {{ $json.target_audience }}\nThis will be used for a: {{ $json.content_type }}\nLocation: {{ $json.location }}\nLanguage: {{ $json.language }}\n\nPlease generate:\n1. A list of 20 primary keywords directly related to {{ $json.primary_topic }}\n2. 30 long-tail keyword variations with search intent (informational, commercial, transactional)\n3. 15 question-based keywords people might ask about this topic\n4. 10 related topics that could be used for supporting content\n\nFormat the output as a structured JSON with these categories. ",
+        "text": "=I need to create comprehensive SEO keyword research for content about:\n{{ $json.primary_topic }}\n\nMy target audience is: {{ $json.target_audience }}\nThis will be used for a: {{ $json.content_type }}\nLocation: {{ $json.location }}\nLanguage: {{ $json.language }}\n\nPlease generate the following, ensuring all content is highly relevant to the '{{ $json.primary_topic }}' and incorporates the '{{ $json.location }}' and '{{ $json.language }}' where appropriate:\n\n1.  Exactly 20 primary keywords.\n2.  Exactly 30 long-tail keyword variations. For each long-tail keyword, specify its search intent. The 'intent' field MUST be one of the following exact strings: \"informational\", \"commercial\", or \"transactional\".\n3.  Exactly 15 question-based keywords.\n4.  Exactly 10 related topics.\n\nFormat the output STRICTLY as a single, valid JSON object with a top-level key named \"output\". Inside the \"output\" object, include the categories as specified in the example structure below. Do not include any explanatory text outside of the JSON structure itself.",
         "hasOutputParser": true,
         "options": {}
       },
+      "id": "33174e7a-6a3b-406d-8b5a-cee8fff53eef",
+      "name": "Topic Expansion1",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
       "position": [
-        60,
-        235
+        -1500,
+        540
       ],
-      "id": "38cd2c66-d4b7-47a9-a3eb-f58eb32f55ab",
-      "name": "Topic Expansion"
+      "typeVersion": 1.8
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Analyze the following competitor content for the Primary Topic \"{{ $('Format Json and add Competitor URLs').item.json.primary_topic }}\":\n\nCompetitor: {{ $('Split the Competitor URLs').item.json.competitorUrls }}\nDATA: ```\n{{ $json.tasks[0].result.toJsonString() }}\n```\n\nPlease identify:\n1. Primary keywords they appear to be targeting\n2. Content gaps or missing topics they aren't covering\n3. Unique angles or approaches they're taking\n4. Questions they're answering (or not answering)\n\nFormat the output as a structured analysis. ",
+        "text": "=Analyze the following competitor content for the Primary Topic \"{{ $('Format Json and add Competitor URLs1').item.json.primary_topic }}\":\n\nCompetitor: {{ $('Split the Competitor URLs1').item.json.competitorUrls }}\nDATA: ```\n{{ $json.tasks[0].result.toJsonString() }}\n```\n\n**As you conduct your analysis, please adopt the perspective of a senior home care business that primarily serves clients using private pay and insurance and does not accept Medicare/Medicaid.**\n\nPlease identify:\n1. Primary keywords they appear to be targeting\n2. Content gaps or missing topics they aren't covering\n3. Unique angles or approaches they're taking\n4. Questions they're answering (or not answering)\n\nFormat the output as a structured analysis. ",
         "options": {}
       },
+      "id": "b8db8476-5fcd-4f6b-b59f-9943b6a0c995",
+      "name": "Competitor Analysis1",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
       "position": [
-        1100,
-        660
+        -460,
+        960
       ],
-      "id": "14811f51-5992-4e35-af8d-f05f5b488bc1",
-      "name": "Competitor Analysis"
+      "typeVersion": 1.8
     },
     {
       "parameters": {
@@ -81,20 +76,20 @@
             }
           ]
         },
-        "location_name_required": "={{ $('Set relevant fields').item.json.location }}",
-        "language_name_required": "={{ $('Set relevant fields').item.json.language }}"
+        "location_name_required": "={{ $('Set relevant fields1').item.json.location }}",
+        "language_name_required": "={{ $('Set relevant fields1').item.json.language }}"
       },
+      "id": "0cc8f2a6-d170-4889-b6cb-d380cc63f640",
+      "name": "Keyword Difficulty1",
       "type": "n8n-nodes-dataforseo.dataForSeo",
-      "typeVersion": 1,
       "position": [
-        656,
-        260
+        -900,
+        560
       ],
-      "id": "564866ac-c287-48a3-816c-78207dfce133",
-      "name": "Keyword Difficulty",
+      "typeVersion": 1,
       "credentials": {
         "dataForSeoApi": {
-          "id": "owHrK02rkWLlYrl3",
+          "id": "kxFa6D5UGdWswtmN",
           "name": "DataForSEO account"
         }
       }
@@ -109,22 +104,22 @@
             }
           ]
         },
-        "location_name": "={{ $('Set relevant fields').item.json.location }}",
-        "language_name": "={{ $('Set relevant fields').item.json.language }}",
+        "location_name": "={{ $('Set relevant fields1').item.json.location }}",
+        "language_name": "={{ $('Set relevant fields1').item.json.language }}",
         "date_from": {},
         "date_to": {}
       },
+      "id": "d31650e1-cdb8-4181-bc9a-e4f5eee7ee89",
+      "name": "Search Volume & CPC1",
       "type": "n8n-nodes-dataforseo.dataForSeo",
-      "typeVersion": 1,
       "position": [
-        656,
-        60
+        -900,
+        360
       ],
-      "id": "d39e392c-c547-4edd-8fe9-014c26152915",
-      "name": "Search Volume & CPC",
+      "typeVersion": 1,
       "credentials": {
         "dataForSeoApi": {
-          "id": "owHrK02rkWLlYrl3",
+          "id": "kxFa6D5UGdWswtmN",
           "name": "DataForSEO account"
         }
       }
@@ -134,60 +129,35 @@
         "fieldToSplitOut": "output.primary_keywords",
         "options": {}
       },
+      "id": "770ef7c3-b80c-4a94-a0c8-ce923fa3c31d",
+      "name": "split primary keywords1",
       "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
       "position": [
-        440,
-        160
+        -1120,
+        460
       ],
-      "id": "2985d85c-4373-4f18-9c27-188f19c920a6",
-      "name": "split primary keywords"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "o1",
-          "mode": "list",
-          "cachedResultName": "o1"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1920,
-        640
-      ],
-      "id": "49819332-744d-45a5-b0ed-b74a1a57aad8",
-      "name": "OpenAI Chat Model2",
-      "credentials": {
-        "openAiApi": {
-          "id": "AZynAxNG099jyj7B",
-          "name": "OpenAi account"
-        }
-      }
+      "typeVersion": 1
     },
     {
       "parameters": {
         "resource": "labs",
         "operation": "get-ranked-keywords",
         "target": "={{ $json.competitorUrls }}",
-        "location_name_required": "={{ $('Format Json and add Competitor URLs').item.json.location }}",
-        "language_name_required": "={{ $('Format Json and add Competitor URLs').item.json.language }}",
+        "location_name_required": "=United States",
+        "language_name_required": "={{ $('Set relevant fields1').item.json.language }}",
         "limit": 10
       },
+      "id": "5da379bf-f2a7-4270-b445-3f26eb7b87d6",
+      "name": "Keyword Ranking per URL1",
       "type": "n8n-nodes-dataforseo.dataForSeo",
-      "typeVersion": 1,
       "position": [
-        880,
-        660
+        -680,
+        960
       ],
-      "id": "07576442-14b1-402a-a084-50fd775d6523",
-      "name": "Keyword Ranking per URL",
+      "typeVersion": 1,
       "credentials": {
         "dataForSeoApi": {
-          "id": "owHrK02rkWLlYrl3",
+          "id": "kxFa6D5UGdWswtmN",
           "name": "DataForSEO account"
         }
       }
@@ -195,17 +165,17 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=# Role: Act as an expert SEO Strategist and Content Planner.\n\n# Context:\n# You are creating an actionable SEO Keyword Strategy & Content Brief based on prior AI-driven keyword generation and competitor analysis.\n# The goal is content creation for the 'Primary Topic', targeting the specified 'Target Audience' and 'Content Type' in the given 'Location' and 'Language'.\n# Data provided includes initial keyword ideas (primary, long-tail, questions), keyword metrics (volume, difficulty), related topics, and competitor analysis insights (their likely keywords, content gaps, unique angles).\n\n# Input Parameters for this Task:\nPrimary Topic: {{ $json.primary_topic }}\nTarget Audience: {{ $json.target_audience }}\nContent Type: {{ $json.content_type }}\nLocation: {{ $json.location }}\nLanguage: {{ $json.language }}\nAnalyzed Compeitors: {{ $json.competitor_urls }}\n\n# Your Task:\n# Analyze the provided input parameters and the detailed 'DATA' section below.\n# Synthesize this information into a clear, concise, and actionable SEO Keyword Strategy & Content Brief.\n# Structure the output logically using Markdown. Focus on providing insights and actionable recommendations, not just listing data. Explain the 'why' behind key recommendations. Keep the language easy to understand, assuming the reader (e.g., a content writer or marketing manager) understands basic SEO concepts but isn't necessarily a deep expert.\n\n# Required Output Sections (Use Markdown Headers):\n\n## 1. Executive Summary\n   - **Objective:** Briefly state the primary goal of creating content on this topic for this audience (e.g., \"Attract [Target Audience] seeking information on [Primary Topic]...\" or \"Position our brand as a thought leader for [Target Audience] regarding [Primary Topic]\").\n   - **Key Opportunity:** Summarize the most significant keyword opportunity identified (e.g., \"Target the high-volume term '[Example Keyword]' while capturing related informational queries via long-tail variations.\")\n   - **Competitor Angle:** Briefly mention the main strategic takeaway from the competitor analysis (e.g., \"Competitors focus heavily on [X], leaving an opportunity to address [Y] or provide a unique angle on [Z].\")\n\n## 2. Target Keyword Strategy & Rationale\n   - **Primary Target Keywords:**\n      - List the top 5-10 recommended primary keywords.\n      - For each, include Search Volume (SV) and Keyword Difficulty (KD).\n      - **Add brief commentary/rationale for each group or key term:** Why were these chosen? (e.g., \"High relevance and strong search volume despite moderate difficulty,\" or \"Balances primary topic focus with user search behavior.\")\n   - **Secondary & Long-Tail Opportunities:**\n      - List the top 10-15 recommended long-tail and secondary keywords.\n      - Group them by likely Search Intent (e.g., Informational, Commercial, Transactional) if discernible from the input data.\n      - **Add brief commentary on the overall opportunity:** What specific user needs or funnel stages do these address? Note any clusters with particularly low competition.\n   - **Key Question Keywords:**\n      - List the top 5 question-based keywords the content *must* answer.\n      - **Add brief commentary:** Why are these questions crucial for the target audience or content goals?\n\n## 3. Competitive Landscape & Content Gaps\n   - **Competitor Focus:** Briefly summarize the main keyword themes or angles competitors seem to be targeting, based on the provided analysis.\n   - **Identified Gaps/Opportunities:** Highlight 1-3 specific content gaps, under-served intents, or unique angles identified from the competitor analysis that this content piece should leverage. Be specific (e.g., \"Competitors explain 'what', but not 'how to implement',\" or \"Lack of practical examples for [Target Audience]\").\n\n## 4. Content Outline & Actionable Recommendations\n   - **Recommended Structure:** Propose a logical H2/H3 structure or outline for the content piece, designed to cover the target keywords and address user intent effectively.\n   - **Keyword Integration:** Briefly suggest how to naturally incorporate the different keyword types (primary, long-tail, questions) within the proposed structure.\n   - **Content Enhancement:** Provide 2-3 specific, actionable recommendations to make the content stand out for the target audience and potentially outperform competitors (e.g., \"Include step-by-step instructions,\" \"Add original data/charts,\" \"Feature quotes from [Target Audience Role],\" \"Create a downloadable checklist\").\n\n## 5. Proposed SEO Titles\n   - List 3-5 compelling, SEO-optimized title options for the content piece. Ensure they are relevant, incorporate keywords naturally, and entice clicks.\n\n# DATA for Analysis:\n# (Analyze the following JSON data containing keyword suggestions, metrics, and competitor analysis results)\n```json\n{{ $json.data.toJsonString() }}\n\n{{ $json.output.toJsonString() }}\n```\n\nFinal Output Format: Ensure the entire response is well-structured, clean Markdown, ready to be used as a content brief.",
+        "text": "=# Role: Act as an expert SEO Strategist and Content Planner.\n\n# Context:\n# You are creating an actionable SEO Keyword Strategy & Content Brief based on prior AI-driven keyword generation and competitor analysis.\n# The goal is content creation for the 'Primary Topic', targeting the specified 'Target Audience' and 'Content Type' in the given 'Location' and 'Language'.\n# Data provided includes initial keyword ideas (primary, long-tail, questions), keyword metrics (volume, difficulty), related topics, and competitor analysis insights (their likely keywords, content gaps, unique angles).\n\n# Input Parameters for this Task:\nPrimary Topic: {{ $json.primary_topic }}\nTarget Audience: {{ $json.target_audience }}\nContent Type: {{ $json.content_type }}\nLocation: {{ $json.location }}\nLanguage: {{ $json.language }}\nAnalyzed Compeitors: {{ $json.competitor_urls }}\n\n# Your Task:\n# Analyze the provided input parameters and the detailed 'DATA' section below.\n# Synthesize this information into a clear, concise, and actionable SEO Keyword Strategy & Content Brief.\n# Structure the output logically using Markdown. Focus on providing insights and actionable recommendations, not just listing data. Explain the 'why' behind key recommendations. Keep the language easy to understand, assuming the reader (e.g., a content writer or marketing manager) understands basic SEO concepts but isn't necessarily a deep expert.\n\n# Required Output Sections (Use Markdown Headers):\n\n## 1. Executive Summary\n   - **Objective:** Briefly state the primary goal of creating content on this topic for this audience (e.g., \"Attract [Target Audience] seeking information on [Primary Topic]...\" or \"Position our brand as a thought leader for [Target Audience] regarding [Primary Topic]\").\n   - **Key Opportunity:** Summarize the most significant keyword opportunity identified (e.g., \"Target the high-volume term '[Example Keyword]' while capturing related informational queries via long-tail variations.\")\n   - **Competitor Angle:** Briefly mention the main strategic takeaway from the competitor analysis (e.g., \"Competitors focus heavily on [X], leaving an opportunity to address [Y] or provide a unique angle on [Z].\")\n\n## 2. Target Keyword Strategy & Rationale\n   - **Primary Target Keywords:**\n      - List the top 5-10 recommended primary keywords.\n      - For each, include Search Volume (SV) and Keyword Difficulty (KD).\n      - **Add brief commentary/rationale for each group or key term:** Why were these chosen? (e.g., \"High relevance and strong search volume despite moderate difficulty,\" or \"Balances primary topic focus with user search behavior.\")\n   - **Secondary & Long-Tail Opportunities:**\n      - List the top 10-15 recommended long-tail and secondary keywords.\n      - Group them by likely Search Intent (e.g., Informational, Commercial, Transactional) if discernible from the input data.\n      - **Add brief commentary on the overall opportunity:** What specific user needs or funnel stages do these address? Note any clusters with particularly low competition.\n   - **Key Question Keywords:**\n      - List the top 5 question-based keywords the content *must* answer.\n      - **Add brief commentary:** Why are these questions crucial for the target audience or content goals?\n\n## 3. Competitive Landscape & Content Gaps\n   - **Competitor Focus:** Briefly summarize the main keyword themes or angles competitors seem to be targeting, based on the provided analysis.\n   - **Identified Gaps/Opportunities:** Highlight 1-3 specific content gaps, under-served intents, or unique angles identified from the competitor analysis that this content piece should leverage. Be specific (e.g., \"Competitors explain 'what', but not 'how to implement',\" or \"Lack of practical examples for [Target Audience]\").\n\n## 4. Content Outline & Actionable Recommendations\n   - **Recommended Structure:** Propose a logical H2/H3 structure or outline for the content piece, designed to cover the target keywords and address user intent effectively.\n   - **Keyword Integration:** Briefly suggest how to naturally incorporate the different keyword types (primary, long-tail, questions) within the proposed structure.\n   - **Content Enhancement:** Provide 2-3 specific, actionable recommendations to make the content stand out for the target audience and potentially outperform competitors (e.g., \"Include step-by-step instructions,\" \"Add original data/charts,\" \"Feature quotes from [Target Audience Role],\" \"Create a downloadable checklist\").\n\n## 5. Proposed SEO Titles\n   - List 4 compelling, SEO-optimized title options for the content piece. Ensure they are relevant, incorporate keywords naturally, and entice clicks.\n\n# DATA for Analysis:\n# (Analyze the following JSON data containing keyword suggestions, metrics, and competitor analysis results)\n```json\n{{ $json.data.toJsonString() }}\n\n{{ $json.output.toJsonString() }}\n```\n\nFinal Output Format: Ensure the entire response is well-structured, clean Markdown, ready to be used as a content brief.",
         "options": {}
       },
+      "id": "b02b9f1e-0df4-4835-8e8c-6db580f94b97",
+      "name": "Final Keyword Strategy1",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
       "position": [
-        1940,
-        440
+        380,
+        740
       ],
-      "id": "1e1f4a81-31b9-450d-85ba-65dbe2b6e8c2",
-      "name": "Final Keyword Strategy"
+      "typeVersion": 1.8
     },
     {
       "parameters": {
@@ -213,29 +183,29 @@
         "path": "ac7e989d-6e32-4850-83c4-f10421467fb8",
         "options": {}
       },
+      "id": "dfaa9d15-2d22-4c3a-8c74-d53c085546d2",
+      "name": "Get Input from NocoDB1",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
       "position": [
-        -680,
-        340
+        -2240,
+        640
       ],
-      "id": "613e1d25-3e9d-4a7f-8657-392854eb00de",
-      "name": "Get Input from NocoDB",
-      "webhookId": "ac7e989d-6e32-4850-83c4-f10421467fb8"
+      "webhookId": "ac7e989d-6e32-4850-83c4-f10421467fb8",
+      "typeVersion": 2
     },
     {
       "parameters": {
         "fieldToSplitOut": "competitorUrls",
         "options": {}
       },
+      "id": "bce37685-75f8-4144-9965-9076e770ec79",
+      "name": "Split the Competitor URLs1",
       "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
       "position": [
-        580,
-        660
+        -980,
+        960
       ],
-      "id": "88076d36-fe04-4a7a-a176-9ba93388b089",
-      "name": "Split the Competitor URLs"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -244,129 +214,104 @@
             {
               "id": "e729ab88-95f8-44c0-948c-d2476262fd17",
               "name": "primary_topic",
-              "value": "={{ $json.body.data.rows[0]['Primary Topic'] }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0]['Primary Topic'] }}"
             },
             {
               "id": "1c6fbf22-fb3f-4577-b6cc-4d0672ff2046",
               "name": "competitor_urls",
-              "value": "={{ $json.body.data.rows[0]['Competitor URLs'] }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0]['Competitor URLs'] }}"
             },
             {
               "id": "ea8518c8-8f89-4aa5-9546-44be77deeebb",
               "name": "target_audience",
-              "value": "={{ $json.body.data.rows[0]['Target Audience'] }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0]['Target Audience'] }}"
             },
             {
               "id": "4b27d628-6cc1-4161-bb49-d39a4b1d320e",
               "name": "content_type",
-              "value": "={{ $json.body.data.rows[0]['Content Type'] }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0]['Content Type'] }}"
             },
             {
               "id": "bb3fefe7-7eea-4a6d-b2de-307b791ff1b6",
               "name": "id",
-              "value": "={{ $json.body.data.rows[0].Id }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0].Id }}"
             },
             {
               "id": "09e64ce6-39de-4550-9078-fe4f233edd9a",
               "name": "status",
-              "value": "={{ $json.body.data.rows[0].Status }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0].Status }}"
             },
             {
               "id": "c10736b0-dece-40a7-9fb0-86b23b44e517",
               "name": "location",
-              "value": "={{ $json.body.data.rows[0].Location }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0].Location }}"
             },
             {
               "id": "6508a1e9-963d-4a79-bd35-f537c892e8d4",
               "name": "language",
-              "value": "={{ $json.body.data.rows[0].Language }}",
-              "type": "string"
+              "type": "string",
+              "value": "={{ $json.body.data.rows[0].Language }}"
             }
           ]
         },
         "options": {}
       },
+      "id": "59491e23-fb2c-4244-83b6-0656dff5c79b",
+      "name": "Set relevant fields1",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
       "position": [
-        -500,
-        340
+        -2060,
+        640
       ],
-      "id": "88d8ad2f-4b66-48e3-aaf7-d6f8210f264b",
-      "name": "Set relevant fields"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "o1",
-          "mode": "list",
-          "cachedResultName": "o1"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1100,
-        860
-      ],
-      "id": "1f083fb0-8b55-43f0-85de-58a81f30a9f2",
-      "name": "OpenAI Chat Model1",
-      "credentials": {
-        "openAiApi": {
-          "id": "AZynAxNG099jyj7B",
-          "name": "OpenAi account"
-        }
-      }
+      "typeVersion": 3.4
     },
     {
       "parameters": {
         "jsCode": "const inputJson = $input.first().json;\nconst rawUrls = inputJson.competitor_urls;\n\nconst competitorUrls = rawUrls\n  .split(\",\")\n  .map(url => url.trim())\n  .filter(url => url.length > 0);\n\nconst outputJson = {\n  ...inputJson,\n  competitorUrls: competitorUrls\n};\n\nreturn [{ json: outputJson }];\n"
       },
+      "id": "92fa96d7-74e3-4e03-9c1f-c1559d820d9d",
+      "name": "Format Json and add Competitor URLs1",
       "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
       "position": [
-        300,
-        660
+        -1260,
+        960
       ],
-      "id": "ffcc38ac-0f0a-4fc7-8e65-86950ea6a01d",
-      "name": "Format Json and add Competitor URLs"
+      "typeVersion": 2
     },
     {
       "parameters": {
         "aggregate": "aggregateAllItemData",
         "options": {}
       },
+      "id": "84fcd8b6-eaf5-4ce8-bb10-a5f7d091dfbb",
+      "name": "Aggregate SV & CPC1",
       "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
       "position": [
-        880,
-        60
+        -680,
+        360
       ],
-      "id": "cf522a25-6e62-4a34-b5dd-6684ea67e938",
-      "name": "Aggregate SV & CPC"
+      "typeVersion": 1
     },
     {
       "parameters": {
         "aggregate": "aggregateAllItemData",
         "options": {}
       },
+      "id": "8581e832-dfc1-42cf-b882-6e42317720e5",
+      "name": "Aggregate KWD1",
       "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
       "position": [
-        880,
-        260
+        -680,
+        560
       ],
-      "id": "781614a6-7afd-4465-86cb-05ef781b70fe",
-      "name": "Aggregate KWD"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -374,14 +319,14 @@
         "combineBy": "combineByPosition",
         "options": {}
       },
+      "id": "a880845e-a3bd-41cb-9624-dffe1f959874",
+      "name": "Merge SV, CPC & KWD1",
       "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.1,
       "position": [
-        1174,
-        160
+        -380,
+        460
       ],
-      "id": "15ab5e60-1f8d-4fd5-bfd8-983a8e0861bb",
-      "name": "Merge SV, CPC & KWD"
+      "typeVersion": 3.1
     },
     {
       "parameters": {
@@ -389,28 +334,28 @@
         "combineBy": "combineByPosition",
         "options": {}
       },
+      "id": "234d41d4-4571-44ac-b8d4-bc16d7c3d735",
+      "name": "Merge Topic Expansion, SV, CPC & KWD1",
       "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.1,
       "position": [
-        1472,
-        235
+        -80,
+        540
       ],
-      "id": "19b056e8-8fb3-436a-b8be-356eeedbb57e",
-      "name": "Merge Topic Expansion, SV, CPC & KWD"
+      "typeVersion": 3.1
     },
     {
       "parameters": {
         "aggregate": "aggregateAllItemData",
         "options": {}
       },
+      "id": "87d368d7-1733-4efe-9b1f-b2cea154b947",
+      "name": "Aggregate Competitor Analysis1",
       "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
       "position": [
-        1472,
-        660
+        -80,
+        960
       ],
-      "id": "460a5cf3-691e-44c8-a1d3-8dcd43728851",
-      "name": "Aggregate Competitor Analysis"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -421,60 +366,26 @@
           "includeUnpaired": false
         }
       },
+      "id": "20cdb3bf-6ab4-45ad-8f0a-cf28922376f1",
+      "name": "Merge Everything1",
       "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.1,
       "position": [
-        1720,
-        440
+        160,
+        740
       ],
-      "id": "b28fe5bb-2ca1-4c02-b45f-033af494d706",
-      "name": "Merge Everything"
-    },
-    {
-      "parameters": {
-        "authentication": "nocoDbApiToken",
-        "operation": "create",
-        "projectId": "pl6znsxtne8x3yh",
-        "table": "mfsjucjn304v1hc",
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldName": "primary_topic_used",
-              "fieldValue": "={{ $('Merge Everything').item.json.primary_topic }}"
-            },
-            {
-              "fieldName": "report_content",
-              "fieldValue": "={{ $json.output }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.nocoDb",
-      "typeVersion": 3,
-      "position": [
-        2320,
-        440
-      ],
-      "id": "a4851979-f231-458b-be3f-13eb3c14b0ee",
-      "name": "Write Content Brief ",
-      "credentials": {
-        "nocoDbApiToken": {
-          "id": "Nqxw0TptKnROWv9i",
-          "name": "NocoDB (hosted) Token account"
-        }
-      }
+      "typeVersion": 3.1
     },
     {
       "parameters": {
         "authentication": "nocoDbApiToken",
         "operation": "update",
-        "projectId": "pl6znsxtne8x3yh",
-        "table": "mp3qmbuye3pyihc",
+        "projectId": "pl7v0yu0jn0ekil",
+        "table": "myefmouvhuwrb03",
         "fieldsUi": {
           "fieldValues": [
             {
               "fieldName": "Id",
-              "fieldValue": "={{ $('Merge Everything').item.json.id }}"
+              "fieldValue": "={{ $('Merge Everything1').item.json.id }}"
             },
             {
               "fieldName": "=Status",
@@ -483,18 +394,18 @@
           ]
         }
       },
+      "id": "fbb9dd6b-06d2-4651-84c2-b35d4ee993d0",
+      "name": "Update Status - Done1",
       "type": "n8n-nodes-base.nocoDb",
-      "typeVersion": 3,
       "position": [
-        2320,
-        600
+        780,
+        920
       ],
-      "id": "e13ecdf4-0696-4bd7-bbf5-49cb508072c6",
-      "name": "Update Status - Done",
+      "typeVersion": 3,
       "credentials": {
         "nocoDbApiToken": {
-          "id": "Nqxw0TptKnROWv9i",
-          "name": "NocoDB (hosted) Token account"
+          "id": "JJRKheujmXObBxef",
+          "name": "NocoDB Token account"
         }
       }
     },
@@ -503,40 +414,34 @@
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "C08Q7EQ8JNS",
           "mode": "list",
+          "value": "C08Q7EQ8JNS",
           "cachedResultName": "seo-keyword-research"
         },
-        "text": "=>> DONE << \n\nSEO Keyword Research \nPrimary Topic: {{ $('Merge Everything').item.json.primary_topic }}\nTarget Audience: {{ $('Merge Everything').item.json.target_audience }}\nContent Type: {{ $('Merge Everything').item.json.content_type }}\nLocation: {{ $('Merge Everything').item.json.location }}\nLanguage: {{ $('Merge Everything').item.json.language }}\nCompetitor URLs: {{ $('Merge Everything').item.json.competitor_urls }}",
+        "text": "=>> DONE << \n\nSEO Keyword Research \nPrimary Topic: {{ $('Merge Everything1').item.json.primary_topic }}\nTarget Audience: {{ $('Merge Everything1').item.json.target_audience }}\nContent Type: {{ $('Merge Everything1').item.json.content_type }}\nLocation: {{ $('Merge Everything1').item.json.location }}\nLanguage: {{ $('Merge Everything1').item.json.language }}\nCompetitor URLs: {{ $('Merge Everything1').item.json.competitor_urls }}",
         "otherOptions": {
           "includeLinkToWorkflow": false,
           "mrkdwn": false
         }
       },
+      "id": "ac28ffa1-05d5-4f8c-9e5b-3e56f74bb1d9",
+      "name": "Send Notification1",
       "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.3,
       "position": [
-        2320,
-        800
+        760,
+        1100
       ],
-      "id": "c23e1c12-41d3-4c91-8175-f035024c6339",
-      "name": "Send Notification",
       "webhookId": "d4615307-81b9-45a3-9d03-4fe5875811c1",
-      "credentials": {
-        "slackApi": {
-          "id": "WSpsCFfmEwBZkHv1",
-          "name": "Slack account"
-        }
-      }
+      "typeVersion": 2.3,
+      "disabled": true
     },
     {
       "parameters": {
-        "select": "channel",
-        "channelId": {
+        "select": "user",
+        "user": {
           "__rl": true,
-          "value": "C08Q7EQ8JNS",
-          "mode": "list",
-          "cachedResultName": "seo-keyword-research"
+          "value": "@pranit",
+          "mode": "username"
         },
         "text": "=>> START << \n\nSEO Keyword Research \nPrimary Topic: {{ $json.primary_topic }}\nTarget Audience: {{ $json.target_audience }}\nContent Type: {{ $json.content_type }}\nLocation: {{ $json.location }}\nLanguage: {{ $json.language }}\nCompetitor URLs: {{ $json.competitor_urls }}",
         "otherOptions": {
@@ -544,28 +449,29 @@
           "mrkdwn": false
         }
       },
+      "id": "d6819889-81d0-4060-8f04-8052f83e074d",
+      "name": "Start Notification1",
       "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.3,
       "position": [
-        -340,
-        20
+        -1900,
+        320
       ],
-      "id": "acfee96e-7d37-4a36-b652-3b0798688538",
-      "name": "Start Notification",
       "webhookId": "d4615307-81b9-45a3-9d03-4fe5875811c1",
+      "typeVersion": 2.3,
       "credentials": {
         "slackApi": {
-          "id": "WSpsCFfmEwBZkHv1",
+          "id": "T45JbPua6IuWkRfW",
           "name": "Slack account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
         "authentication": "nocoDbApiToken",
         "operation": "update",
-        "projectId": "pl6znsxtne8x3yh",
-        "table": "mp3qmbuye3pyihc",
+        "projectId": "pl7v0yu0jn0ekil",
+        "table": "myefmouvhuwrb03",
         "fieldsUi": {
           "fieldValues": [
             {
@@ -579,18 +485,18 @@
           ]
         }
       },
+      "id": "e6a5b0e9-e54c-42a1-a32a-7afcd1d875c9",
+      "name": "Update Status - Started1",
       "type": "n8n-nodes-base.nocoDb",
-      "typeVersion": 3,
       "position": [
-        -140,
-        40
+        -1700,
+        340
       ],
-      "id": "5af5855d-b858-4b9f-91bc-1cbb14c08258",
-      "name": "Update Status - Started",
+      "typeVersion": 3,
       "credentials": {
         "nocoDbApiToken": {
-          "id": "Nqxw0TptKnROWv9i",
-          "name": "NocoDB (hosted) Token account"
+          "id": "JJRKheujmXObBxef",
+          "name": "NocoDB Token account"
         }
       }
     },
@@ -601,14 +507,14 @@
         "width": 480,
         "color": 7
       },
+      "id": "4c03e4b9-da27-41c6-aaf5-1794e28c99cc",
+      "name": "Sticky Note8",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        -440,
-        -140
+        -2000,
+        160
       ],
-      "id": "a9db9a15-acc1-411c-b596-810a2ce6b8f6",
-      "name": "Sticky Note"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -616,14 +522,14 @@
         "height": 540,
         "width": 280
       },
+      "id": "143c7bf3-d638-4c14-a26a-18d867807502",
+      "name": "Sticky Note9",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        60,
-        40
+        -1500,
+        340
       ],
-      "id": "bd0e0d35-dce3-47c4-bb85-de02ded10691",
-      "name": "Sticky Note1"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -632,14 +538,14 @@
         "width": 1220,
         "color": 5
       },
+      "id": "9c6a1a8c-dfb3-45e1-9dd4-f8448dcf2c88",
+      "name": "Sticky Note10",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        400,
-        -80
+        -1160,
+        220
       ],
-      "id": "9bb138db-cf51-4614-aeb4-abe7b298aab7",
-      "name": "Sticky Note2"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -648,14 +554,14 @@
         "width": 1360,
         "color": 4
       },
+      "id": "ece829c9-667d-4c99-8580-f1648835006b",
+      "name": "Sticky Note11",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        260,
-        600
+        -1300,
+        900
       ],
-      "id": "757c15fc-5b5f-44d6-ae06-43dac9c32b2c",
-      "name": "Sticky Note3"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -664,29 +570,30 @@
         "width": 500,
         "color": 6
       },
+      "id": "b0dfa6a8-8352-48a6-b48c-1caec6a018a2",
+      "name": "Sticky Note12",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        1700,
-        260
+        140,
+        560
       ],
-      "id": "5459b4ee-f8dd-426b-b0f2-52b8ad6e1222",
-      "name": "Sticky Note4"
+      "typeVersion": 1
     },
     {
       "parameters": {
-        "content": "## Save, Update Status and Notify",
+        "content": "## Extract and Develop Content",
         "height": 720,
+        "width": 1800,
         "color": 7
       },
+      "id": "42e53d83-8c39-4737-a6d5-1efbd16c4eb2",
+      "name": "Sticky Note13",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        2260,
-        260
+        700,
+        560
       ],
-      "id": "398ff4dd-d143-4944-96f3-3284cb391d84",
-      "name": "Sticky Note5"
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -694,39 +601,524 @@
         "height": 320,
         "width": 400
       },
+      "id": "bdd8d7e1-4c9a-430a-bfa9-2fac2619ec88",
+      "name": "Sticky Note14",
       "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
       "position": [
-        -740,
-        240
+        -2300,
+        540
       ],
-      "id": "7d0ee538-62c7-4bdc-bd4a-be5f600c78b4",
-      "name": "Sticky Note6"
+      "typeVersion": 1
     },
     {
       "parameters": {
-        "content": "# AI-Powered SEO Keyword Research Automation",
-        "height": 80,
-        "width": 820,
-        "color": 3
+        "model": "google/gemini-2.5-pro-preview",
+        "options": {}
       },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        460,
-        -280
-      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
-      "id": "42f81576-ac7c-4ab2-a93b-3c95410bd801",
-      "name": "Sticky Note7"
+      "position": [
+        -440,
+        1160
+      ],
+      "id": "24fdd76a-9aea-4271-bdd3-e8318c7a3f6f",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "P84n99cAAxOGTsfX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        400,
+        960
+      ],
+      "id": "f63a713b-be93-4589-a8fe-514674f0d612",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "P84n99cAAxOGTsfX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        800
+      ],
+      "id": "6abac98d-d234-45ac-a831-feacfb6cc4fa",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "P84n99cAAxOGTsfX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"seo_titles\": [\n    \"First proposed SEO title exactly as written\",\n    \"Second proposed SEO title exactly as written\",\n    \"Third proposed SEO title exactly as written\"\n  ],\n  \"total_count\": 3\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1300,
+        800
+      ],
+      "id": "f359a48f-a459-415b-b97e-317a8abb1231",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        840
+      ],
+      "id": "d9fc7724-e4d5-42dd-96d3-dd3c8615dea3",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "P84n99cAAxOGTsfX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<prompt>\n**Task:** Extract all proposed SEO titles from the provided Content Strategy Report for use in automated content generation.\n\n**Input:**\n```markdown\n<content_strategy_report>\n{{ $json.output }}\n</content_strategy_report>\n```\n\n**Required Output Format:**\nYou must return ONLY a valid JSON array containing all proposed SEO titles found in the report. No additional text, explanations, or formatting.\n\n**Expected JSON Structure:**\n```json\n{\n  \"seo_titles\": [\n    \"First proposed SEO title exactly as written\",\n    \"Second proposed SEO title exactly as written\",\n    \"Third proposed SEO title exactly as written\"\n  ],\n  \"total_count\": 3\n}\n```\n\n**Critical Requirements:**\n1. Extract titles EXACTLY as they appear in the report (preserve all punctuation, capitalization, etc.)\n2. Include ALL proposed titles - do not filter or select\n3. Return valid JSON only - no markdown formatting, no additional text\n4. If no titles are found, return: {\"seo_titles\": [], \"total_count\": 0}\n5. Ensure proper JSON escaping for any quotes or special characters in titles\n\n**Validation:**\n- Each title should be a complete, standalone SEO title\n- Titles typically include target keywords and location (Winchester, MA)\n- Common patterns: \"How to...\", \"Best...\", \"Complete Guide to...\", \"[Topic] in Winchester, MA\"\n</prompt>",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        580
+      ],
+      "id": "556249ca-a008-403b-bf9e-9db7398a03a0",
+      "name": "Content Title Extractor",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<prompt>\n**Primary Goal:**\nGenerate one complete, well-structured, and engaging content piece for the specific SEO title provided below. This content must strictly adhere to our company's \"Brand Voice Guidelines\" and emulate the style of the \"Brand Voice Examples.\"\n\n**Your Role:**\nAct as an expert SEO Content Creator and a skilled brand journalist specializing in senior care content for families in Winchester, MA.\n\n**Core Inputs:**\n\n1. **Target SEO Title:**\n   ```\n   <target_seo_title>\n   {{ $json.title }}\n   </target_seo_title>\n   ```\n   *This is title {{ $json.index }} of {{ $json.total_count }} total titles.*\n\n2. **Content Strategy Report (Source Document):**\n   ```markdown\n   <content_strategy_report>\n   {{ $('Final Keyword Strategy1').item.json.output }}\n   </content_strategy_report>\n   ```\n   *This report is your primary blueprint. Use it to understand the target audience, SEO keyword strategy, competitive analysis, content gaps, and content outline.*\n\n3. **Brand Voice Guidelines:**\n   ```xml\n   <brand_voice_guidelines>\n   **Tone:** Empathetic, warm, reassuring, trustworthy, personal, and optimistic. We speak as caring advisors who have walked in our readers' shoes.\n   \n   **Language:** \n   - Use clear, conversational, and accessible language\n   - Frequently use \"we\" and \"our\" to create a partnership feeling\n   - Avoid clinical or overly corporate jargon in favor of human-centered language\n   - Use person-first language that focuses on the individual, not their condition\n   - Include phrases that acknowledge the emotional journey families are on\n   \n   **Sentence Structure:** \n   - Mix shorter, impactful statements with longer explanatory sentences\n   - Aim for excellent readability (Flesch-Kincaid grade level 8-10)\n   - Use natural, conversational flow that feels like talking to a trusted friend\n   \n   **Perspective:** \n   - Write as knowledgeable and caring advisors who truly understand the family's journey\n   - Position ourselves as partners, not just service providers\n   - Acknowledge the emotional and practical challenges families face\n   \n   **Key Messaging Points to Weave In:**\n   - \"We've been in your shoes\" - acknowledge shared experience\n   - Personalized, individualized care approach\n   - Flexible solutions with no unnecessary minimums or restrictions\n   - Family-centered approach that involves loved ones in decisions\n   - Peace of mind for families\n   - Focus on the person, not just their condition\n   - Quality of life and helping people \"have their best day, every day\"\n   </brand_voice_guidelines>\n   ```\n\n4. **Brand Voice Examples:**\n   ```xml\n   <brand_voice_examples>\n   <example_1>\n   \"We've been in your shoes and know the importance of personalized and affordable in-home care. We have no weekly minimums and work with you to create a schedule that fits your unique needs and budget – whether it's once a week or 24/7 home care in the Boston Northwest area.\"\n   </example_1>\n   \n   <example_2>\n   \"We know your first priority when choosing a home care agency in the Boston area is finding someone who will care for your loved one as you would… someone you can always trust and rely on. We've been in your shoes, and know what it takes to deliver the very best quality of personalized, yet affordable, in-home care.\"\n   </example_2>\n   \n   <example_3>\n   \"Our goal is to enhance the quality of life for you and your loved one. We're not content to simply help people get through the day. We want them to live life to the fullest and have the best day possible, filled with exceptional care, joy and accomplishment. Today and every day.\"\n   </example_3>\n   </brand_voice_examples>\n   ```\n\n**Your Task:**\n\n<content_creation_requirements>\nCreate ONE complete content piece specifically optimized for the target SEO title: \"{{ $json.title }}\"\n\n**Content Structure:**\n- Use the target SEO title as your H1 heading\n- Follow the content outline from the strategy report, adapting it to focus on the specific angle of this title\n- Ensure the content directly addresses what someone searching for this specific title would want to know\n\n**Content Requirements:**\n- **Length:** 1500-3000+ words (comprehensive and substantial)\n- **Keywords:** Naturally integrate primary, secondary, and long-tail keywords from the strategy report\n- **Questions:** Address relevant question keywords that align with this specific title\n- **Actionable Content:** Include practical recommendations, cost guidance, and tools as suggested in the strategy report\n- **Local Focus:** Maintain focus on Winchester, MA and surrounding Boston Northwest area\n\n**Brand Voice Application:**\n- Embody the empathetic, partnership-focused tone throughout\n- Use \"we've been in your shoes\" messaging appropriately\n- Balance emotional support with practical guidance\n- Include reassuring language that validates family concerns\n- End with supportive (not pushy) calls to action\n\n**Quality Standards:**\n- Ensure content can stand alone as a complete, valuable resource\n- Provide original insights beyond generic advice\n- Maintain factual accuracy based on the strategy report context\n- Create natural flow from introduction through conclusion\n- Address the emotional journey families are experiencing\n</content_creation_requirements>\n\n**Output Requirements:**\n\n<output_format>\nReturn the complete content piece using this structure:\n\n```markdown\n# {{ $json.title }}\n\n[Complete content following the requirements above]\n\n## Call to Action\n[Supportive, non-pushy call to action section]\n```\n\n**Critical Instructions:**\n- Use Markdown formatting throughout\n- Start with the target SEO title as H1\n- Include proper heading hierarchy (##, ###)\n- No additional commentary or meta-text\n- Return only the finished content piece ready for publication\n- Focus specifically on this one title, not all titles from the report\n</output_format>\n</prompt>",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1640,
+        580
+      ],
+      "id": "f6cc82ae-79ee-4126-a34c-08e8217c6538",
+      "name": "SEO Content Generator"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const title = $json.title || \"Untitled\";\nconst content = $json.output || $json.text || $json.content;\nconst index = $json.index || 1;\n\n// Create sanitized filename\nconst filename = title\n  .toLowerCase()\n  .replace(/[^a-z0-9\\s]/g, '')\n  .replace(/\\s+/g, '-')\n  .substring(0, 50);\n\nreturn {\n  json: {\n    filename: `${String(index).padStart(2, '0')}-${filename}.md`,\n    content: content,\n    title: title,\n    index: index,\n    content_field: `content${index}`, // This will be content1, content2, content3, content4\n    word_count: content ? content.split(' ').length : 0,\n    created_at: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1960,
+        580
+      ],
+      "id": "835a1536-a2b2-4c0c-a2af-9706e687c755",
+      "name": "Format Output"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "create",
+        "projectId": "pl7v0yu0jn0ekil",
+        "table": "m2az3tq3ncvglbx",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "primary_topic_used",
+              "fieldValue": "={{ $json.primary_topic_used }}"
+            },
+            {
+              "fieldName": "content1",
+              "fieldValue": "={{ $json.content1 }}"
+            },
+            {
+              "fieldName": "content2",
+              "fieldValue": "={{ $json.content2 }}"
+            },
+            {
+              "fieldName": "content3",
+              "fieldValue": "={{ $json.content3 }}"
+            },
+            {
+              "fieldName": "content4",
+              "fieldValue": "={{ $json.content4 }}"
+            },
+            {
+              "fieldName": "report_content",
+              "fieldValue": "={{ $json.report_content }}"
+            },
+            {
+              "fieldName": "generatedAt",
+              "fieldValue": "={{$now}}"
+            },
+            {
+              "fieldName": "target_audience",
+              "fieldValue": "={{ $json.target_audience }}"
+            },
+            {
+              "fieldName": "content_type",
+              "fieldValue": "={{ $json.content_type }}"
+            },
+            {
+              "fieldName": "location",
+              "fieldValue": "={{ $json.location }}"
+            }
+          ]
+        }
+      },
+      "id": "9228b3f8-6265-4e4d-adf3-75eb3f552ed9",
+      "name": "Write Content Brief ",
+      "type": "n8n-nodes-base.nocoDb",
+      "position": [
+        2300,
+        580
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "JJRKheujmXObBxef",
+          "name": "NocoDB Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst strategyReport = $('Final Keyword Strategy1').first().json.output;\nconst primaryTopic = $(\"Merge Everything1\").first().json.primary_topic;\n\n// Get the input data from the \"Set relevant fields1\" node\nconst inputData = $('Set relevant fields1').first().json;\n\nconst contentData = {\n  primary_topic_used: primaryTopic || \"Generated Content\",\n  report_content: strategyReport,\n  created_at: new Date().toISOString(),\n  total_pieces: allItems.length,\n  // Add the input fields from the Set node\n  target_audience: inputData.target_audience,\n  content_type: inputData.content_type,\n  location: inputData.location,\n  language: inputData.language,\n  id: inputData.id,\n  status: inputData.status,\n  competitor_urls: inputData.competitor_urls\n};\n\n// Use array index instead of item.json.index\nallItems.forEach((item, arrayIndex) => {\n  const index = arrayIndex + 1; // Convert to 1-based indexing\n  contentData[`content${index}`] = item.json.content;\n  contentData[`title${index}`] = item.json.title;\n});\n\nconsole.log(`Aggregated ${allItems.length} content pieces with strategy report`);\nconsole.log('Fields populated:', Object.keys(contentData));\n\nreturn {\n  json: contentData\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        580
+      ],
+      "id": "8e93ccb3-4d55-4041-9e72-73913c3a7464",
+      "name": "Aggregation Node"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract the seo_titles array from the structured output\nconst data = $input.first().json.output;\nconst titles = data.seo_titles;\n\n// Add error checking to prevent the undefined error\nif (!titles || !Array.isArray(titles)) {\n  return [{\n    json: {\n      error: \"No SEO titles found or titles is not an array\",\n      data: data\n    }\n  }];\n}\n\n// Convert each title into a separate item for the loop\n// Each item must have a .json property in N8N\nreturn titles.map((title, index) => ({\n  json: {\n    title: title,\n    index: index + 1,\n    total_count: data.total_count\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        580
+      ],
+      "id": "343fce61-7c0f-4704-a76c-7c0d206d4271",
+      "name": "Title Extractor Code"
     }
   ],
   "pinData": {},
   "connections": {
-    "OpenAI Chat Model": {
+    "OpenRouter Chat Model": {
       "ai_languageModel": [
         [
           {
-            "node": "Topic Expansion",
+            "node": "Topic Expansion1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Topic Expansion1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Topic Expansion1": {
+      "main": [
+        [
+          {
+            "node": "split primary keywords1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Topic Expansion, SV, CPC & KWD1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Competitor Analysis1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Competitor Analysis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword Difficulty1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate KWD1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Volume & CPC1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate SV & CPC1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split primary keywords1": {
+      "main": [
+        [
+          {
+            "node": "Search Volume & CPC1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Keyword Difficulty1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword Ranking per URL1": {
+      "main": [
+        [
+          {
+            "node": "Competitor Analysis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Keyword Strategy1": {
+      "main": [
+        [
+          {
+            "node": "Update Status - Done1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Notification1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Content Title Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Input from NocoDB1": {
+      "main": [
+        [
+          {
+            "node": "Set relevant fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split the Competitor URLs1": {
+      "main": [
+        [
+          {
+            "node": "Keyword Ranking per URL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set relevant fields1": {
+      "main": [
+        [
+          {
+            "node": "Topic Expansion1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Format Json and add Competitor URLs1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Everything1",
+            "type": "main",
+            "index": 2
+          },
+          {
+            "node": "Update Status - Started1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Start Notification1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Json and add Competitor URLs1": {
+      "main": [
+        [
+          {
+            "node": "Split the Competitor URLs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate SV & CPC1": {
+      "main": [
+        [
+          {
+            "node": "Merge SV, CPC & KWD1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate KWD1": {
+      "main": [
+        [
+          {
+            "node": "Merge SV, CPC & KWD1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge SV, CPC & KWD1": {
+      "main": [
+        [
+          {
+            "node": "Merge Topic Expansion, SV, CPC & KWD1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Topic Expansion, SV, CPC & KWD1": {
+      "main": [
+        [
+          {
+            "node": "Merge Everything1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Competitor Analysis1": {
+      "main": [
+        [
+          {
+            "node": "Merge Everything1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Everything1": {
+      "main": [
+        [
+          {
+            "node": "Final Keyword Strategy1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Competitor Analysis1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Final Keyword Strategy1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SEO Content Generator",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -737,265 +1129,77 @@
       "ai_outputParser": [
         [
           {
-            "node": "Topic Expansion",
+            "node": "Content Title Extractor",
             "type": "ai_outputParser",
             "index": 0
           }
         ]
       ]
     },
-    "Topic Expansion": {
-      "main": [
-        [
-          {
-            "node": "split primary keywords",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge Topic Expansion, SV, CPC & KWD",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "split primary keywords": {
-      "main": [
-        [
-          {
-            "node": "Search Volume & CPC",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Keyword Difficulty",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Search Volume & CPC": {
-      "main": [
-        [
-          {
-            "node": "Aggregate SV & CPC",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Keyword Difficulty": {
-      "main": [
-        [
-          {
-            "node": "Aggregate KWD",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Competitor Analysis": {
-      "main": [
-        [
-          {
-            "node": "Aggregate Competitor Analysis",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model2": {
+    "OpenRouter Chat Model2": {
       "ai_languageModel": [
         [
           {
-            "node": "Final Keyword Strategy",
+            "node": "Content Title Extractor",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Keyword Ranking per URL": {
+    "Content Title Extractor": {
       "main": [
         [
           {
-            "node": "Competitor Analysis",
+            "node": "Title Extractor Code",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Final Keyword Strategy": {
+    "SEO Content Generator": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Output": {
+      "main": [
+        [
+          {
+            "node": "Aggregation Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregation Node": {
       "main": [
         [
           {
             "node": "Write Content Brief ",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "Update Status - Done",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Send Notification",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
     },
-    "Get Input from NocoDB": {
+    "Title Extractor Code": {
       "main": [
         [
           {
-            "node": "Set relevant fields",
+            "node": "SEO Content Generator",
             "type": "main",
             "index": 0
           }
         ]
-      ]
-    },
-    "Split the Competitor URLs": {
-      "main": [
-        [
-          {
-            "node": "Keyword Ranking per URL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Set relevant fields": {
-      "main": [
-        [
-          {
-            "node": "Topic Expansion",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Format Json and add Competitor URLs",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge Everything",
-            "type": "main",
-            "index": 2
-          },
-          {
-            "node": "Update Status - Started",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Start Notification",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Competitor Analysis",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Json and add Competitor URLs": {
-      "main": [
-        [
-          {
-            "node": "Split the Competitor URLs",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aggregate SV & CPC": {
-      "main": [
-        [
-          {
-            "node": "Merge SV, CPC & KWD",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aggregate KWD": {
-      "main": [
-        [
-          {
-            "node": "Merge SV, CPC & KWD",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge SV, CPC & KWD": {
-      "main": [
-        [
-          {
-            "node": "Merge Topic Expansion, SV, CPC & KWD",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge Topic Expansion, SV, CPC & KWD": {
-      "main": [
-        [
-          {
-            "node": "Merge Everything",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aggregate Competitor Analysis": {
-      "main": [
-        [
-          {
-            "node": "Merge Everything",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge Everything": {
-      "main": [
-        [
-          {
-            "node": "Final Keyword Strategy",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Write Content Brief ": {
-      "main": [
-        []
       ]
     }
   },
@@ -1003,18 +1207,10 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9abcff0c-1aff-4594-8796-8828963a3f75",
+  "versionId": "d9d23ff3-3908-44d8-879a-f469e9b0ebf1",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "dcb7e9805ce8fe33e4ef843b02947aacc9de2ca8e3594435f3a36d9f33df54fc"
+    "instanceId": "ef7f2de977d8784035275641feaaf1b8a55c40ab8ec97663ab71524e9e645802"
   },
-  "id": "nGpVbW7RTylKujyT",
-  "tags": [
-    {
-      "createdAt": "2025-04-14T11:05:17.062Z",
-      "updatedAt": "2025-04-14T11:05:17.062Z",
-      "id": "SRzFKUr6fVtmWq2d",
-      "name": "works"
-    }
-  ]
+  "id": "TX4G9fqEJy4ich5G",
+  "tags": []
 }
